@@ -79,13 +79,25 @@ try {
 
         removeBook(ttl: string): void {
             if (!this.books.length) throw new Error('Nothing to remove')
-            for (let i = 0; i < this.books.length; i++) {
-                if (this.books.some(e => e.title === ttl)) {
-                    this.books.splice(i, 1)
-                    return console.log('Book removed successfully')
+
+            // for (let i = 0; i < this.books.length; i++) {
+            //     if (this.books.some(e => e.title === ttl)) {
+            //         this.books.splice(i, 1)
+            //         console.log('Book removed successfully')
+            //         return 
+            //    }
+            // }  Zoshto ova ne raboti kako sho treba, celo vreme ja birshe taa shto ne treba
+
+            let booksArray = this.books.filter(e => {
+                if (e.title !== ttl) {
+                    return true
+                } else {
+                    return false
                 }
-            }
-            throw new Error('Nothing found')
+            })
+
+            if(booksArray.length === this.books.length) throw new Error('Nothing removed')
+            this.books = booksArray
         }
 
         listBooks<T>(property: string, value: T): Book[] {
@@ -133,9 +145,13 @@ try {
     console.log(library.listBooks('author', 'Straub'))
 
     console.log('/////////// Books by title //////////')
+
+    console.log(library.listBooks('title', "The Talisman"))
     console.log(library.listBooks('title', 'Anna Karenina'))
 
-    // library.removeBook("Anna Karenina")
+    library.removeBook("Anna Karenina")
+    library.removeBook("The Talisman")
+
 } catch (e) {
     if (e.message === 'Nothing found' || e.message === 'Nothing to remove') {
         console.log(e.message)
