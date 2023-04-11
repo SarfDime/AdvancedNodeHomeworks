@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "name": "typescriptone",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "devDependencies": {},
+  "scripts": {
+    "dev": "npx nodemon"
+  },
+  "author": "Dime",
+  "license": "ISC",
+  "description": ""
+}
