@@ -85,7 +85,7 @@ try {
             //     if (this.books.some(e => e.title === ttl)) {
             //         this.books.splice(i, 1)
             //         console.log('Book removed successfully')
-            //         return 
+            //         break 
             //    }
             // }  // Zoshto ova ne raboti kako sho treba, celo vreme ja birshe taa shto ne treba
 
@@ -97,7 +97,7 @@ try {
                 }
             })
 
-            if(booksArray.length === this.books.length) throw new Error('Nothing removed')
+            if (booksArray.length === this.books.length) throw new Error('Nothing removed')
             this.books = booksArray
         }
 
@@ -152,6 +152,9 @@ try {
 
     library.removeBook("Anna Karenina")
     library.removeBook("The Talisman")
+
+    // console.log(library.listBooks('title', "The Talisman"))
+    // console.log(library.listBooks('title', 'Anna Karenina'))
 
 } catch (e) {
     if (e.message === 'Nothing found' || e.message === 'Nothing to remove') {
