@@ -51,6 +51,7 @@ console.log("///////// EXERCISE 2 //////////")
 
 
 /////// EXERCISE 2 ///////
+
 try {
     interface Book {
         title: string,
@@ -86,7 +87,7 @@ try {
             //         console.log('Book removed successfully')
             //         return 
             //    }
-            // }  Zoshto ova ne raboti kako sho treba, celo vreme ja birshe taa shto ne treba
+            // }  // Zoshto ova ne raboti kako sho treba, celo vreme ja birshe taa shto ne treba
 
             let booksArray = this.books.filter(e => {
                 if (e.title !== ttl) {
