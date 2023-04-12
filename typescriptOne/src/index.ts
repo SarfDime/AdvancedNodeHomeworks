@@ -85,10 +85,11 @@ try {
                 if (this.books[i].title === ttl) {
                     this.books.splice(i, 1)
                     console.log('Book removed successfully')
-                    break
+                    return
                 }
             }
 
+            throw new Error('Nothing removed')
             // let booksArray = this.books.filter(e => {
             //     if (e.title !== ttl) {
             //         return true
@@ -150,19 +151,19 @@ try {
     console.log(library.listBooks('title', "The Talisman"))
     console.log(library.listBooks('title', 'Anna Karenina'))
 
-    library.removeBook("Anna Karenina")
-    library.removeBook("The Talisman")
+    library.removeBook("Anna Kareninaa")
+    // library.removeBook("The Talisman")
 
-    // console.log(library.listBooks('title', "The Talisman"))
+    console.log(library.listBooks('title', "The Talisman"))
     // console.log(library.listBooks('title', 'Anna Karenina'))
 
 } catch (e) {
-    if (e.message === 'Nothing found' || e.message === 'Nothing to remove') {
+    if (e.message === 'Nothing to remove' || e.message === "Nothing found" || e.message === "Nothing removed") {
         console.log(e.message)
     } else {
         console.log(e)
-    }
-} // Dali e dobro da go stavam vaka cel kod vo try catch?
+        }
+    } // Dali e dobro da go stavam vaka cel kod vo try catch?
 
 
 
