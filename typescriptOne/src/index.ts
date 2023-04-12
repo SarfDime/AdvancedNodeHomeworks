@@ -15,11 +15,11 @@ try {
         FEMALE = 'female'
     }
 
-    function filterByProp<T, K>(arr: K[], property: keyof K, value: T): K[] {
+    function filterByProp<T, K>(arr: K[], property: string, value: T): K[] {
         const foundCases = arr.filter(e => {
             const prop = e[property]
             if (Array.isArray(prop)) {
-                if (prop.some(e => e === value)) {
+                if (prop.some(f => f === value)) {
                     return e
                 }
             }
@@ -64,14 +64,14 @@ try {
     }
 
     interface ILibrary {
-        books: Book[],
+        // books: Book[],
         addBook(book: Book): void,
         removeBook(title: string): void,
         listBooks<T>(property: string, value: T): Book[]
     }
 
     class Library implements ILibrary {
-        books: Book[] = [] // Nemozhev da otkrijam kako da go napravam ova private https://prnt.sc/D8UKNaOWEbvU
+        private books: Book[] = []
 
         addBook(book: Book): void {
             this.books.push(book)
@@ -81,24 +81,24 @@ try {
         removeBook(ttl: string): void {
             if (!this.books.length) throw new Error('Nothing to remove')
 
-            // for (let i = 0; i < this.books.length; i++) {
-            //     if (this.books.some(e => e.title === ttl)) {
-            //         this.books.splice(i, 1)
-            //         console.log('Book removed successfully')
-            //         break 
-            //    }
-            // }  // Zoshto ova ne raboti kako sho treba, celo vreme ja birshe taa shto ne treba
-
-            let booksArray = this.books.filter(e => {
-                if (e.title !== ttl) {
-                    return true
-                } else {
-                    return false
+            for (let i = 0; i < this.books.length; i++) {
+                if (this.books[i].title === ttl) {
+                    this.books.splice(i, 1)
+                    console.log('Book removed successfully')
+                    break
                 }
-            })
+            }
 
-            if (booksArray.length === this.books.length) throw new Error('Nothing removed')
-            this.books = booksArray
+            // let booksArray = this.books.filter(e => {
+            //     if (e.title !== ttl) {
+            //         return true
+            //     } else {
+            //         return false
+            //     }
+            // })
+
+            // if (booksArray.length === this.books.length) throw new Error('Nothing removed')
+            // this.books = booksArray
         }
 
         listBooks<T>(property: string, value: T): Book[] {
