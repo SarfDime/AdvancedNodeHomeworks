@@ -1,4 +1,3 @@
-
 ////// EXERCISE ONE ///////
 
 console.log("///////// EXERCISE 1 //////////")
@@ -48,7 +47,6 @@ try {
 }
 
 console.log("///////// EXERCISE 2 //////////")
-
 
 /////// EXERCISE 2 ///////
 
@@ -162,29 +160,5 @@ try {
         console.log(e.message)
     } else {
         console.log(e)
-        }
-    } // Dali e dobro da go stavam vaka cel kod vo try catch?
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }
+} // Dali e dobro da go stavam vaka cel kod vo try catch?
