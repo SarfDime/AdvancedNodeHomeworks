@@ -7,5 +7,10 @@ export interface Product {
 export interface Order {
     id: string,
     placedAt: Date,
+    description: string
     products: Product[]
+}
+
+export interface routeParamsID {
+    id: string;
 }
