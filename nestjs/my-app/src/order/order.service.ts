@@ -1,5 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { OrderDto } from '../dto/dtos';
+import { OrderDto, uOrderDto } from '../dto/dtos';
 import { Order } from '../interfaces/interfaces'
 import { allOrders } from 'src/mock/orders'
 import { v4 as uuid } from 'uuid';
@@ -34,7 +34,7 @@ export class OrderService {
         return `Order ${order.id} created successfully`
     }
 
-    updateOrder(orderDto: OrderDto, ID: string) {
+    updateOrder(orderDto: uOrderDto, ID: string) {
         let tempOrdersArray = this.orders
         for (let i = 0; i < tempOrdersArray.length; i++) {
             if (tempOrdersArray[i].id == ID) {

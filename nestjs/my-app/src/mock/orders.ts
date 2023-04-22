@@ -12,7 +12,7 @@ export const orderTwo: Order = {
     id: '2',
     placedAt: new Date(),
     description: 'Order Two description',
-    products: [allProducts[3], allProducts[4], allProducts[0], allProducts[3]]
+    products: [allProducts[2], allProducts[3], allProducts[0], allProducts[1]]
 }
 
 

@@ -1,11 +1,11 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { Product } from '../interfaces/interfaces'
 import { allProducts } from 'src/mock/products';
-import { ProductDto } from 'src/dto/dtos';
+import { ProductDto, uProductDto } from 'src/dto/dtos';
 import { v4 as uuid } from 'uuid';
 
 @Injectable()
-export class ProductService {
+export class ProductsService {
     private products: Product[] = allProducts
 
     getProducts(ID: string) {
@@ -33,7 +33,7 @@ export class ProductService {
         return `Product ${product.id} created successfully`
     }
 
-    updateProduct(productDto: ProductDto, ID: string) {
+    updateProduct(productDto: uProductDto, ID: string) {
         let tempProductsArray = this.products
         for (let i = 0; i < tempProductsArray.length; i++) {
             if (tempProductsArray[i].id == ID) {

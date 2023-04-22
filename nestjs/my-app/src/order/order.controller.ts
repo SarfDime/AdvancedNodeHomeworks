@@ -8,7 +8,7 @@ import {
     Put,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
-import { OrderDto } from '../dto/dtos';
+import { OrderDto, uOrderDto } from '../dto/dtos';
 import { routeParamsID } from 'src/interfaces/interfaces';
 
 @Controller('orders')
@@ -29,14 +29,14 @@ export class OrderController {
         return this.orderService.createOrder(body);
     }
 
-    @Put()
+    @Put(':id?')
     updateOrder(
-        @Body() body: OrderDto, @Param() params: routeParamsID,
+        @Body() body: uOrderDto, @Param() params: routeParamsID,
     ) {
         return this.orderService.updateOrder(body, params.id);
     }
 
-    @Delete()
+    @Delete(':id?')
     deleteOrder(
         @Param() params: routeParamsID,
     ) {

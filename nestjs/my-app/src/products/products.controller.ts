@@ -4,16 +4,17 @@ import {
     Delete,
     Get,
     Param,
+    Post,
     Put,
 } from '@nestjs/common';
 
-import { ProductService } from './products.service';
+import { ProductsService } from './products.service';
 import { routeParamsID } from 'src/interfaces/interfaces';
-import { ProductDto } from 'src/dto/dtos';
+import { ProductDto, uProductDto } from 'src/dto/dtos';
 
 @Controller('products')
 export class ProductsController {
-    constructor(private readonly productService: ProductService) { }
+    constructor(private readonly productService: ProductsService) { }
 
     @Get(':id?')
     getProducts(
@@ -22,20 +23,21 @@ export class ProductsController {
         return this.productService.getProducts(params.id)
     }
 
+    @Post()
     createProduct(
         @Body() body: ProductDto
     ) {
         return this.productService.createProduct(body);
     }
 
-    @Put()
+    @Put(':id?')
     updateProduct(
-        @Body() body: ProductDto, @Param() params: routeParamsID,
+        @Body() body: uProductDto, @Param() params: routeParamsID,
     ) {
         return this.productService.updateProduct(body, params.id);
     }
 
-    @Delete()
+    @Delete(':id?')
     deleteProduct(
         @Param() params: routeParamsID,
     ) {
