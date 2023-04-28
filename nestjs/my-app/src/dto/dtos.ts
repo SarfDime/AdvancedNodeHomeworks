@@ -1,26 +1,32 @@
-import { IsNotEmpty } from 'class-validator'
+import { IsNotEmpty, IsOptional } from 'class-validator'
 import { v4 as uuid } from 'uuid'
 
 export class OrderDto {
-    @IsNotEmpty()
-    products: ProductDto[] // probav da go stavam tuka ama nekje pak
+    @IsOptional()
+    id: string = uuid()
     @IsNotEmpty()
     description: string
+    @IsOptional()
+    placedAt: number = new Date().getTime()
 }
 
 export class uOrderDto {
-    products: ProductDto[]
+    @IsNotEmpty()
     description: string
 }
 
 export class ProductDto {
-    id: string = uuid() // Kako da go napravam ova da se defaultne na uuid()
+    @IsOptional()
+    id: string = uuid()
+    @IsNotEmpty()
     name: string
     @IsNotEmpty()
     price: number
 }
 
 export class uProductDto {
+    @IsOptional()
     name: string
+    @IsOptional()
     price: number
 }

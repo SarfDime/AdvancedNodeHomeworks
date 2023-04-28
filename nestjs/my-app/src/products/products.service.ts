@@ -1,66 +1,56 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { Product } from '../interfaces/interfaces'
-import { allProducts } from 'src/mock/products';
-import { ProductDto, uProductDto } from 'src/dto/dtos';
-import { v4 as uuid } from 'uuid';
+import { Injectable, BadRequestException, } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
+import { ProductDto, uProductDto } from 'src/dto/dtos'
+import { OrderEntity } from '../order/entities/order_entities'
+import { ProductEntity } from '../products/entities/product_entities'
+
 
 @Injectable()
 export class ProductsService {
-    private products: Product[] = allProducts
+    constructor(
+        @InjectRepository(ProductEntity)
+        private readonly prodRepo: Repository<ProductEntity>,
 
-    getProducts(ID: string) {
-        if (!ID) return this.products
-        let productById: Product[] = this.products.filter(e => e.id === ID)
-        if (!productById?.length) throw new HttpException(
-            `Product with ID ${ID} does not exist`,
-            HttpStatus.BAD_REQUEST,
-        )
-        return productById
+        @InjectRepository(OrderEntity)
+        private readonly orderRepo: Repository<OrderEntity>,
+    ) { }
+
+    async getProducts(ID: string): Promise<ProductEntity | ProductEntity[]> {
+        if (!ID) return await this.prodRepo.find({ relations: ['order'] })
+        const product = await this.prodRepo.findOneBy({ id: ID })
+        if (!product) throw new BadRequestException(`Product with ID ${ID} does not exist`,)
+        return product
     }
 
-    createProduct(productDto: ProductDto) {
-        if (!Object.keys(productDto).length) throw new HttpException(
-            `Enter data properly`,
-            HttpStatus.BAD_REQUEST,
-        )
+    async createProduct(productDto: ProductDto, ID: string): Promise<string> {
+        const order = await this.orderRepo.findOneBy({ id: ID })
+        if (!Object.keys(productDto).length) throw new BadRequestException(`Enter data properly`)
 
-        const product: Product = {
+        const product = this.prodRepo.create({
             ...productDto,
-            id: uuid(),
-        }
+            order: order
+        })
+        await this.prodRepo.save(product)
 
-        this.products.push(product)
         return `Product ${product.id} created successfully`
     }
 
-    updateProduct(productDto: uProductDto, ID: string) {
-        let tempProductsArray = this.products
-        for (let i = 0; i < tempProductsArray.length; i++) {
-            if (tempProductsArray[i].id == ID) {
-                tempProductsArray[i].name = productDto.name || tempProductsArray[i].name
-                tempProductsArray[i].price = productDto.price || tempProductsArray[i].price
-                this.products = tempProductsArray
-                return `Product ${ID} updated successfully`
-            }
-        }
-        throw new HttpException(
-            `Product with ID ${ID} does not exist`,
-            HttpStatus.BAD_REQUEST,
-        )
+    async updateProduct(productDto: uProductDto, ID: string): Promise<string> {
+        const product = await this.prodRepo.preload({ id: ID, ...productDto, })
+
+        if (!product) throw new BadRequestException(`Product with ID ${ID} does not exist`,)
+        await this.prodRepo.save(product)
+
+        return `Product ${ID} updated successfully`
     }
 
-    deleteProduct(ID: string) {
-        let tempProductsArray = this.products
-        for (let i = 0; i < tempProductsArray.length; i++) {
-            if (tempProductsArray[i].id == ID) {
-                tempProductsArray.splice(i, 1)
-                this.products = tempProductsArray
-                return `Product ${ID} deleted successfully`
-            }
-        }
-        throw new HttpException(
-            `Product with ID ${ID} does not exist`,
-            HttpStatus.BAD_REQUEST,
-        )
+    async deleteProduct(ID: string) {
+        if (!await this.prodRepo.findOne({
+            where: { id: ID },
+            relations: ['order'],
+        })) throw new BadRequestException(`Product with ID ${ID} does not exist`,)
+        await this.prodRepo.delete(ID)
+        return `Product ${ID} deleted successfully`
     }
 }

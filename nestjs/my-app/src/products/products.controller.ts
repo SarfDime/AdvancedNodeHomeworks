@@ -6,6 +6,8 @@ import {
     Param,
     Post,
     Put,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 
 import { ProductsService } from './products.service';
@@ -23,21 +25,23 @@ export class ProductsController {
         return this.productService.getProducts(params.id)
     }
 
-    @Post()
+    @Post(':id')
+    @UsePipes(new ValidationPipe({ transform: true}))
     createProduct(
+        @Param() params: routeParamsID,
         @Body() body: ProductDto
     ) {
-        return this.productService.createProduct(body);
+        return this.productService.createProduct(body, params.id);
     }
 
-    @Put(':id?')
+    @Put(':id')
     updateProduct(
         @Body() body: uProductDto, @Param() params: routeParamsID,
     ) {
         return this.productService.updateProduct(body, params.id);
     }
 
-    @Delete(':id?')
+    @Delete(':id')
     deleteProduct(
         @Param() params: routeParamsID,
     ) {

@@ -1,67 +1,54 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { OrderDto, uOrderDto } from '../dto/dtos';
-import { Order } from '../interfaces/interfaces'
-import { allOrders } from 'src/mock/orders'
-import { v4 as uuid } from 'uuid';
+import { Injectable, BadRequestException } from '@nestjs/common'
+import { OrderDto, uOrderDto } from '../dto/dtos'
+import { InjectRepository } from '@nestjs/typeorm'
+import { OrderEntity } from '../order/entities/order_entities'
+import { Repository } from 'typeorm'
 
 @Injectable()
 export class OrderService {
-    private orders: Order[] = allOrders
+    constructor(
+        @InjectRepository(OrderEntity)
+        private readonly orderRepo: Repository<OrderEntity>,
+    ) {}
 
-    getOrders(ID: string) {
-        if (!ID) return this.orders
-        let orderByID: Order[] = this.orders.filter(e => e.id === ID)
-        if (!orderByID?.length) throw new HttpException(
-            `Order with ID ${ID} does not exist`,
-            HttpStatus.BAD_REQUEST,
-        )
+    async getOrders(ID: string) {
+        if (!ID) return this.orderRepo.find({
+            relations: ['products'],
+        })
+
+        const orderByID = await this.orderRepo.findOne({
+            where: { id: ID },
+            relations: ['products'],
+        })
+
+        if (!orderByID) throw new BadRequestException(`Order with ID ${ID} does not exist`,)
         return orderByID
     }
 
-    createOrder(orderDto: OrderDto) {
-        if (!Object.keys(orderDto).length) throw new HttpException(
-            `Enter data properly`,
-            HttpStatus.BAD_REQUEST,
-        )
+    async createOrder(orderDto: OrderDto) {
+        const order = this.orderRepo.create(orderDto)
 
-        const order: Order = {
-            ...orderDto,
-            id: uuid(),
-            placedAt: new Date(),
-        }
-
-        this.orders.push(order)
+        await this.orderRepo.save(order);
         return `Order ${order.id} created successfully`
     }
 
-    updateOrder(orderDto: uOrderDto, ID: string) {
-        let tempOrdersArray = this.orders
-        for (let i = 0; i < tempOrdersArray.length; i++) {
-            if (tempOrdersArray[i].id == ID) {
-                tempOrdersArray[i].description = orderDto.description || tempOrdersArray[i].description
-                tempOrdersArray[i].products = orderDto.products || tempOrdersArray[i].products
-                this.orders = tempOrdersArray
-                return `Order ${ID} updated successfully`
-            }
-        }
-        throw new HttpException(
-            `Order with ID ${ID} does not exist`,
-            HttpStatus.BAD_REQUEST,
-        )
+    async updateOrder(orderDto: uOrderDto, ID: string) {
+        console.log(orderDto)
+        console.log("dime")
+        const order = await this.orderRepo.preload({ id: ID, ...orderDto, });
+
+        if (!order) throw new BadRequestException(`Order with ID ${ID} does not exist`,)
+        await this.orderRepo.save(order)
+
+        return `Order ${ID} updated successfully`
     }
 
-    deleteOrder(ID: string) {
-        let tempOrdersArray = this.orders
-        for (let i = 0; i < tempOrdersArray.length; i++) {
-            if (tempOrdersArray[i].id == ID) {
-                tempOrdersArray.splice(i, 1)
-                this.orders = tempOrdersArray
-                return `Order ${ID} deleted successfully`
-            }
-        }
-        throw new HttpException(
-            `Order with ID ${ID} does not exist`,
-            HttpStatus.BAD_REQUEST,
-        )
+    async deleteOrder(ID: string) {
+        if (!(await this.orderRepo.findOne({
+            where: { id: ID },
+            relations: ['products'],
+        }))) throw new BadRequestException(`Order with ID ${ID} does not exist`,)
+        await this.orderRepo.delete(ID)
+        return `Order ${ID} deleted successfully`
     }
 }
