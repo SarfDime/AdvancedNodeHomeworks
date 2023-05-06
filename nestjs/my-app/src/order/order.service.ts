@@ -33,8 +33,6 @@ export class OrderService {
     }
 
     async updateOrder(orderDto: uOrderDto, ID: string) {
-        console.log(orderDto)
-        console.log("dime")
         const order = await this.orderRepo.preload({ id: ID, ...orderDto, });
 
         if (!order) throw new BadRequestException(`Order with ID ${ID} does not exist`,)
