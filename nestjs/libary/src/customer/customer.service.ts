@@ -51,16 +51,65 @@ export class CustomerService {
   }
 
   async buybooks(ID: string, dto: customerPurchase) {
+    const customer = await this.customerRepo.findOne({ where: { id: ID } })
     const book = await this.bookRepo.findOne({ where: { id: dto.book } })
 
+    if (!customer) throw new BadRequestException(`Customer with ID ${ID} does not exist`)
     if (!book) throw new BadRequestException(`Book with ID ${ID} does not exist`)
 
     if (book.stock === 0) throw new BadRequestException(`Book with ID ${ID} is out of stock`)
+
+    book.buyers.push(customer)
     book.stock--
     await this.bookRepo.save(book)
+
+    customer.boughtBooks.push(book)
+    await this.customerRepo.save(customer)
+
+    return `Customer with id ${customer.id}, succesfully bought book with id ${book.id}`
   }
 
-  async rentBooks(ID: string, dto: customerPurchase) {
+  async rentBook(ID: string, dto: customerPurchase) {
+    const customer = await this.customerRepo.findOne({ where: { id: ID } })
+    const book = await this.bookRepo.findOne({ where: { id: dto.book } })
 
+    if (!customer) throw new BadRequestException(`Customer with ID ${ID} does not exist`)
+    if (!book) throw new BadRequestException(`Book with ID ${ID} does not exist`)
+
+    if (book.stock === 0) throw new BadRequestException(`Book with ID ${ID} is out of stock`)
+
+    book.renters.push(customer)
+    book.stock--
+    await this.bookRepo.save(book)
+
+    customer.rentedBooks.push(book)
+    await this.customerRepo.save(customer)
+
+    return `Customer with id ${customer.id}, succesfully bought book with id ${book.id}`
+  }
+
+  async returnBook(ID: string, dto: customerPurchase) {
+    const customer = await this.customerRepo.findOne({ where: { id: ID } })
+    const book = await this.bookRepo.findOne({ where: { id: dto.book } })
+
+    if (!customer) throw new BadRequestException(`Customer with ID ${ID} does not exist`)
+    if (!book) throw new BadRequestException(`Book with ID ${ID} does not exist`)
+
+    const customerIndex = this.getIndex(book.renters, customer.id)
+    const bookIndex = this.getIndex(customer.rentedBooks, book.id)
+    if (customerIndex === -1 || bookIndex === -1) throw new BadRequestException(`Book with id ${book.id} isn't being rented by ${customer.id}`)
+
+    book.renters.splice(customerIndex, 1)
+    book.stock++
+    await this.bookRepo.save(book)
+
+    customer.rentedBooks.splice(bookIndex, 1)
+    await this.customerRepo.save(customer)
+
+    return `Customer with id ${customer.id}, succesfully returned book with id ${book.id}`
+  }
+
+  getIndex(arr: BooksEntity[] | CustomerEntity[], ID: string): number {
+    return arr.findIndex((e: { id: string }) => e.id === ID)
   }
 }

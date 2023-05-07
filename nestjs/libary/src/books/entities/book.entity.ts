@@ -27,5 +27,8 @@ export class BooksEntity {
     publisher: PublisherEntity
 
     @OneToMany(() => CustomerEntity, (e) => e.rentedBooks)
-    renters: PublisherEntity[]
+    renters: CustomerEntity[]
+
+    @OneToMany(() => CustomerEntity, (e) => e.boughtBooks)
+    buyers: CustomerEntity[]
 }

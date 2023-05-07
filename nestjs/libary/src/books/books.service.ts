@@ -31,14 +31,16 @@ export class BooksService {
   }
 
   async create(dto: BookDto) {
-    const author = await this.authorRepo.findOneBy({ id: dto.links.author })
+    const author = await this.authorRepo.findOneBy({ id: dto.author })
 
-    const publisher = await this.publisherRepo.findOneBy({ id: dto.links.publisher })
+    const publisher = await this.publisherRepo.findOneBy({ id: dto.publisher })
+
+    if(!author || !publisher) throw new BadRequestException(`Publisher or author invalid`)
 
     const book = this.bookRepo.create({
-      ...BookDto,
+      ...dto,
       publisher: publisher,
-      author: author
+      author: author,
     })
 
     await this.bookRepo.save(book)

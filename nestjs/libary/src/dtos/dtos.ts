@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator'
+import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator'
 import { v4 as uuid } from 'uuid'
 
 export class AuthorDto {
@@ -32,12 +32,10 @@ export class BookDto {
     genre: string
     @IsNotEmpty()
     stock: number
-    @ValidateNested()
-    @IsObject()
-    links: {
-        author: string
-        publisher: string
-    }
+    @IsNotEmpty()
+    author: string
+    @IsNotEmpty()
+    publisher: string
 }
 
 export class uBookDto {
@@ -91,6 +89,6 @@ export class uCustomerDto {
     phoneNumber: number
 }
 
-export class customerPurchase{
+export class customerPurchase {
     book: string
 }
