@@ -8,11 +8,12 @@ import { PublisherEntity } from 'src/publisher/entities/publisher.entity'
 
 @Injectable()
 export class BooksService {
-
   constructor(
     @InjectRepository(BooksEntity)
     private readonly bookRepo: Repository<BooksEntity>,
+    @InjectRepository(AuthorEntity)
     private readonly publisherRepo: Repository<PublisherEntity>,
+    @InjectRepository(PublisherEntity)
     private readonly authorRepo: Repository<AuthorEntity>,
   ) { }
 
